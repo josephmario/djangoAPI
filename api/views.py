@@ -8,8 +8,40 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import APIView
+from rest_framework import generics
+from rest_framework import mixins
 # Create your views here.
 
+class PersonList(generics.GenericAPIView, mixins.ListModelMixin, 
+                 mixins.CreateModelMixin):
+    queryset = Person.objects.all()
+    serializer_class = PersonSerializer
+
+    def get(self, request):
+        return self.list(request)
+    
+    def post(self, request):
+        return self.create(request)
+    
+class PersonDetails(generics.GenericAPIView, mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    
+    queryset = Person.objects.all()
+    serializer_class = PersonSerializer
+
+    lookup_field = 'id'
+
+    def get(self, request, id):
+        return self.retrieve(request, id=id)
+
+    def put(self, request, id):
+        return self.update(request, id=id)
+
+    def delete(self, request, id):
+        return self.destroy(request, id=id)
+
+
+'''
 class PersonList(APIView):
 
     # def get_object(self, id):
@@ -70,7 +102,7 @@ class PersonDetails(APIView):
         person = self.get_object(id)
         person.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+'''
 '''
 @api_view(['GET', 'POST'])
 def person_list(request):
